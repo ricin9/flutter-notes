@@ -153,65 +153,51 @@ class _HomeState extends State<Home> with RouteAware, WidgetsBindingObserver {
       floatingActionButton: FloatingActionButton(
           child: Text("+"), onPressed: () => _showNoteAddDialog()),
       body: OrientationBuilder(
-          builder: (context, orientation) => orientation == Orientation.portrait
-              ? ListView.builder(
-                  itemCount: notes.length,
-                  itemBuilder: (context, index) => Card(
-                        child: InkWell(
-                          onLongPress: () =>
-                              _showNoteRemovalDialog(notes[index].id),
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    Notepage(note: notes[index]),
-                              ),
-                            );
-                          },
-                          child: ListTile(
-                              leading: Image.asset("assets/note-rounded.png"),
-                              title: Text("Miloudi Mohamed"),
-                              subtitle: Text(
-                                notes[index].text.length > 15
-                                    ? "${notes[index].text.substring(0, 14)}..."
-                                    : notes[index].text,
-                              )),
-                        ),
-                      ))
-              : Row(
-                  children: [
-                    Expanded(
-                      child: ListView.builder(
-                          itemCount: notes.length,
-                          itemBuilder: (context, index) => Card(
-                                child: InkWell(
-                                  onLongPress: () =>
-                                      _showNoteRemovalDialog(notes[index].id),
-                                  onTap: () {
+          builder: (context, orientation) => Row(
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                        itemCount: notes.length,
+                        itemBuilder: (context, index) => Card(
+                              child: InkWell(
+                                onLongPress: () =>
+                                    _showNoteRemovalDialog(notes[index].id),
+                                onTap: () {
+                                  if (orientation == Orientation.landscape) {
                                     setState(() {
                                       _currentNoteLandscape = index;
                                       stopTTS();
                                     });
-                                  },
-                                  child: ListTile(
-                                      leading: Image.asset(
-                                          "assets/note-rounded.png"),
-                                      title: Text("Miloudi Mohamed"),
-                                      subtitle: Text(
-                                        notes[index].text.length > 15
-                                            ? "${notes[index].text.substring(0, 14)}..."
-                                            : notes[index].text,
-                                      )),
-                                ),
-                              )),
-                    ),
-                    Expanded(
-                        flex: 1,
-                        child: _currentNoteLandscape != null
-                            ? NoteDetail(note: notes[_currentNoteLandscape!])
-                            : Container())
-                  ],
-                )),
+                                  } else {
+                                    Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                Notepage(note: notes[index])));
+                                  }
+                                },
+                                child: ListTile(
+                                    leading:
+                                        Image.asset("assets/note-rounded.png"),
+                                    title: Text("Miloudi Mohamed"),
+                                    subtitle: Text(
+                                      notes[index].text.length > 15
+                                          ? "${notes[index].text.substring(0, 14)}..."
+                                          : notes[index].text,
+                                    )),
+                              ),
+                            )),
+                  ),
+                  Expanded(
+                      flex: orientation == Orientation.landscape &&
+                              _currentNoteLandscape != null
+                          ? 1
+                          : 0,
+                      child: orientation == Orientation.landscape &&
+                              _currentNoteLandscape != null
+                          ? NoteDetail(note: notes[_currentNoteLandscape!])
+                          : Container())
+                ],
+              )),
     );
   }
 }
